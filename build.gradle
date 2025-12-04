@@ -1,0 +1,56 @@
+// ---------------------------------------------------------------------
+// Common configuration for every sub‑project
+// ---------------------------------------------------------------------
+plugins {
+    // Apply the Java Platform plugin only if you want a BOM for shared versions.
+    // It is *not* applied to the sub‑projects automatically.
+//    id 'java-platform' apply false
+}
+
+/* --------------------------------------------------------------
+   Centralised version definitions
+   (you could also move these to a version catalog – see the note
+   at the bottom of the answer)
+   -------------------------------------------------------------- */
+ext {
+    javaVersion          = JavaVersion.VERSION_17          // Spring Boot 3 needs Java 17+
+    springBootVersion    = '3.2.4'                         // latest at time of writing
+    lombokVersion        = '1.18.32'
+    junitJupiterVersion  = '5.10.2'
+}
+
+/* --------------------------------------------------------------
+   Common configuration applied to *all* sub‑projects
+   -------------------------------------------------------------- */
+subprojects { subproj ->
+    apply plugin: 'java'
+    apply plugin: 'java-library'
+
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17) // uses ext.javaVersion
+        }
+    }
+
+
+    // ------------------------------
+    // Shared dependencies
+    // ------------------------------
+    dependencies {
+        // Lombok – compile‑only so it does not end up in the jar
+        compileOnly "org.projectlombok:lombok:${lombokVersion}"
+        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+        testImplementation platform("org.junit:junit-bom:${junitJupiterVersion}")
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+    }
+    tasks.withType(Jar) {
+        preserveFileTimestamps = false
+        reproducibleFileOrder = true
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+}

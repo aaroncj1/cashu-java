@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cashu-core/cashu-java.cashu-core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/cashu-core/cashu-java.cashu-core.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cashu-java-mint/cashu-java.cashu-java-mint.main.iml" filepath="$PROJECT_DIR$/.idea/modules/cashu-java-mint/cashu-java.cashu-java-mint.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cashu-java-wallet/cashu-java.cashu-java-wallet.main.iml" filepath="$PROJECT_DIR$/.idea/modules/cashu-java-wallet/cashu-java.cashu-java-wallet.main.iml" />
+    </modules>
+  </component>
+</project>
