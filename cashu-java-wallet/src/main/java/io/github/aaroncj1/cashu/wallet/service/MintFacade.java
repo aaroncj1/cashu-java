@@ -51,6 +51,10 @@ public class MintFacade {
         return MintHttpClient.swapTokens(mintUrl, swapTokensRequest);
     }
 
+    public SwapResponse swapTokens(SwapTokensRequest request) throws Exception {
+        return MintHttpClient.swapTokens(mintUrl, request);
+    }
+
     public String getMintUrl() {
         return mintUrl;
     }
