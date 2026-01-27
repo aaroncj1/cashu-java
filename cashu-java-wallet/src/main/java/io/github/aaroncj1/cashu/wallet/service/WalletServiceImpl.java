@@ -220,21 +220,30 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public void getBalance(String mint) {
+    public long getBalance(String mint) {
         // add up tokens in db
         long balance = 0;
         Iterable<TokenEntity> tokens = tokenRepository.findAll();
         for (TokenEntity token : tokens) {
-            if (mint == null || token.getMint().equals(mint)) {
+            if (mint == null || mint.isEmpty() || token.getMint().equals(mint)) {
                 balance += token.getAmount();
             }
         }
         System.out.println("Balance: " + balance);
+        return balance;
     }
 
     @Override
     public void addMint(String mintUrl) {
-        // add mint to mint map and db
+        // Verify mint exists by fetching info
+        try {
+             MintFacade mintFacade = new MintFacade(mintUrl);
+             // Just checking if we can get keysets, which implies connectivity
+             mintFacade.getKeysetSummaryForUnit("sat");
+             System.out.println("Mint verified: " + mintUrl);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to connect to mint: " + mintUrl, e);
+        }
     }
 
     public void getMints() {

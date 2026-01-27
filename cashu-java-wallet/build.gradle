@@ -1,18 +1,23 @@
 plugins {
-    // IMPORTANT: order matters – java (applied by the root) first,
-    // then the Spring Boot plugin and the dependency‑management plugin.
     id 'org.springframework.boot' version "3.2.4"
     id 'io.spring.dependency-management' version '1.1.5'
     id 'java'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 
 group = 'cashu.java'
 version = 'unspecified'
 
+javafx {
+    version = "17.0.6"
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+}
+
 dependencies {
     implementation project(":cashu-core")
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    runtimeOnly 'com.h2database:h2'
 
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'

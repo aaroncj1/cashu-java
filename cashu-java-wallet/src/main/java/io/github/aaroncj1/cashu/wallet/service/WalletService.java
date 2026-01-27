@@ -12,7 +12,7 @@ public interface WalletService {
 //
 //    void sendLightning(String amount);
 
-    void getBalance(String mint);
+    long getBalance(String mint);
 
     void addMint(String mintUrl);
 }
