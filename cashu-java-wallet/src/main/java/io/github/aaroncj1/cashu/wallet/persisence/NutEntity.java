@@ -1,8 +1,10 @@
 package io.github.aaroncj1.cashu.wallet.persisence;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
+@Data
 public class NutEntity {
 
     @Id

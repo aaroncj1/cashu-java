@@ -78,6 +78,36 @@ public class CryptoUtils {
         return sb.toString();
     }
 
+    public static String bytesToHexId(byte[] b) {
+        // Special handling for keyset ID which might be hex-encoded string as bytes
+        // If the bytes represent ASCII chars of a hex string, we want the string, not hex of bytes.
+        // Example: id=0050f763b36a7b8c (16 chars)
+        // If received as bytes of this string: 30303530...
+        // We want to return new String(b)
+        // But if received as raw bytes of the ID (8 bytes), we want hex.
+        // Keyset ID is typically 8 bytes (16 hex chars).
+        
+        if (b.length == 16) {
+             // If length is 16, it might be the raw ASCII bytes of the hex string?
+             // Or it's a 16-byte ID?
+             // Cashu keyset IDs are 8 bytes base64 encoded usually, or hex?
+             // NUT-02: "Keyset ID is derived ... first 8 bytes of the hash."
+             // So it's 8 bytes.
+             // Hex representation is 16 characters.
+             // If we have 16 bytes here, it's likely the ASCII bytes of the hex string.
+             try {
+                 String s = new String(b);
+                 // Check if it's valid hex
+                 if (s.matches("^[0-9a-fA-F]{16}$")) {
+                     return s;
+                 }
+             } catch (Exception e) {
+                 // ignore
+             }
+        }
+        return bytesToHex(b);
+    }
+
     public static BigInteger hexToBigInt(String hex) {
         return new BigInteger(hex, 16);
     }

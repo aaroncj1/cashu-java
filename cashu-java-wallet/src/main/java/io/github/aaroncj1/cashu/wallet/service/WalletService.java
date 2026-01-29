@@ -12,7 +12,15 @@ public interface WalletService {
 //
 //    void sendLightning(String amount);
 
-    void getBalance(String mint);
+    long getBalance(String mint);
 
     void addMint(String mintUrl);
+
+    String requestMint(String amount, String mintUrl) throws Exception;
+
+    void mintTokens(String quoteId, String amount, String mintUrl) throws Exception;
+
+    String requestMelt(String invoice, String mintUrl) throws Exception;
+
+    void meltTokens(String quoteId, String mintUrl) throws Exception;
 }

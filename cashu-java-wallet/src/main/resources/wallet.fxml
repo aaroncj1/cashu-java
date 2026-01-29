@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="10" alignment="TOP_CENTER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.aaroncj1.cashu.wallet.ui.controller.WalletController">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Cashu Wallet" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Mint URL:"/>
+        <TextField fx:id="mintUrlField" HBox.hgrow="ALWAYS" promptText="https://testnut.cashu.space"/>
+        <Button text="Add Mint" onAction="#onAddMint"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Balance:"/>
+        <TextField fx:id="balanceMintField" HBox.hgrow="ALWAYS" promptText="Filter by Mint URL (optional)"/>
+        <Button text="Check Balance" onAction="#onCheckBalance"/>
+    </HBox>
+
+    <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+        <tabs>
+            <Tab text="Send/Receive">
+                <VBox spacing="10">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                     <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Amount:"/>
+                        <TextField fx:id="amountField" promptText="Amount in sats"/>
+                        <Button text="Send Ecash" onAction="#onSend"/>
+                    </HBox>
+
+                    <Label text="Token (Copy/Paste here):"/>
+                    <TextArea fx:id="tokenArea" prefRowCount="5" wrapText="true"/>
+                    <Button text="Receive Ecash" onAction="#onReceive" maxWidth="Infinity"/>
+                </VBox>
+            </Tab>
+            <Tab text="Deposit (Mint)">
+                <VBox spacing="10">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <Label text="Deposit via Lightning" style="-fx-font-weight: bold;"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                         <Label text="Amount (sats):"/>
+                         <TextField fx:id="depositAmountField"/>
+                         <Button text="Request Invoice" onAction="#onRequestMint"/>
+                    </HBox>
+                    <Label text="Lightning Invoice:"/>
+                    <TextArea fx:id="invoiceArea" prefRowCount="3" wrapText="true" editable="false"/>
+                    <Label text="Quote ID:"/>
+                    <TextField fx:id="quoteIdField" editable="true"/>
+                    <Button text="Check Payment &amp; Mint" onAction="#onMintTokens" maxWidth="Infinity"/>
+                </VBox>
+            </Tab>
+            <Tab text="Withdraw (Melt)">
+                <VBox spacing="10">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <Label text="Withdraw to Lightning" style="-fx-font-weight: bold;"/>
+                    <Label text="Lightning Invoice (Bolt11):"/>
+                    <TextArea fx:id="meltInvoiceArea" prefRowCount="3" wrapText="true"/>
+                    <Button text="Get Melt Quote" onAction="#onRequestMelt" maxWidth="Infinity"/>
+                    <Label text="Melt Quote ID:"/>
+                    <TextField fx:id="meltQuoteIdField" editable="true"/>
+                    <Button text="Pay Invoice (Melt)" onAction="#onMeltTokens" maxWidth="Infinity"/>
+                </VBox>
+            </Tab>
+        </tabs>
+    </TabPane>
+
+    <Label text="Log:"/>
+    <TextArea fx:id="logArea" prefRowCount="5" editable="false" wrapText="true"/>
+
+</VBox>

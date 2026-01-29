@@ -1,6 +1,10 @@
 package io.github.aaroncj1.cashu.wallet.service;
 
 import io.github.aaroncj1.cashu.core.model.*;
+import io.github.aaroncj1.cashu.core.model.api.melt.v1.bolt11.request.ExecuteMeltQuoteRequest;
+import io.github.aaroncj1.cashu.core.model.api.melt.v1.bolt11.request.RequestMeltQuoteRequest;
+import io.github.aaroncj1.cashu.core.model.api.melt.v1.bolt11.response.ExecuteMeltQuoteResponse;
+import io.github.aaroncj1.cashu.core.model.api.melt.v1.bolt11.response.RequestMeltQuoteResponse;
 import io.github.aaroncj1.cashu.core.model.api.mint.v1.bolt11.request.ExecuteMintQuoteRequest;
 import io.github.aaroncj1.cashu.core.model.api.mint.v1.bolt11.request.RequestMintQuoteRequest;
 import io.github.aaroncj1.cashu.core.model.api.mint.v1.bolt11.response.ExecuteMintQuoteResponse;
@@ -44,11 +48,27 @@ public class MintFacade {
         return MintHttpClient.mintTokens(mintUrl, "bolt11", request);
     }
 
+    public RequestMeltQuoteResponse requestMeltQuote(RequestMeltQuoteRequest request) throws Exception {
+        return MintHttpClient.requestMeltQuote(mintUrl, "bolt11", request);
+    }
+
+    public RequestMeltQuoteResponse meltState(String quoteId) throws Exception {
+        return MintHttpClient.meltState(mintUrl, "bolt11", quoteId);
+    }
+
+    public ExecuteMeltQuoteResponse executeMeltTokens(ExecuteMeltQuoteRequest request) throws Exception {
+        return MintHttpClient.executeMeltTokens(mintUrl, "bolt11", request);
+    }
+
     public SwapResponse swapTokens(List<Proof> proofList) throws Exception {
         BlindedMessageService blindedMessageService = new BlindedMessageService();
         List<BlindingInfo> blindingInfoList = blindedMessageService.generateBlindedMessagesToSwapProofs(proofList);
         SwapTokensRequest swapTokensRequest = new SwapTokensRequest(proofList, ObjectConverts.convertListBlindingInfo(blindingInfoList));
         return MintHttpClient.swapTokens(mintUrl, swapTokensRequest);
+    }
+
+    public SwapResponse swapTokens(SwapTokensRequest request) throws Exception {
+        return MintHttpClient.swapTokens(mintUrl, request);
     }
 
     public String getMintUrl() {
