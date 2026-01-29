@@ -249,4 +249,137 @@ public class WalletServiceImpl implements WalletService {
     public void getMints() {
         // add mint to mint map and db
     }
-}
+
+    private final Map<String, List<BlindingInfo>> pendingMintBlindingInfos = new HashMap<>();
+
+    @Override
+    public String requestMint(String amount, String mintUrl) throws Exception {
+        MintFacade mintFacade = new MintFacade(mintUrl);
+        RequestMintQuoteResponse response = mintFacade.mintTokens(new RequestMintQuoteRequest("sat", amount));
+        // We should store the blinding info for later use when minting
+        // For simplicity in this demo, we'll generate it now and store it in memory associated with quoteId
+        // In a real app, persist this.
+        
+        KeysetSummary activeKeyset = mintFacade.getKeysetSummaryForUnit("sat");
+        String id = activeKeyset.id();
+        List<BlindingInfo> blindingInfos = new BlindedMessageService().generateBlindedMessagesForAmount(Long.valueOf(amount), id);
+        pendingMintBlindingInfos.put(response.quote(), blindingInfos);
+        
+        return response.quote() + "|" + response.request();
+    }
+
+    @Override
+    public void mintTokens(String quoteId, String amount, String mintUrl) throws Exception {
+        MintFacade mintFacade = new MintFacade(mintUrl);
+        List<BlindingInfo> blindingInfos = pendingMintBlindingInfos.get(quoteId);
+        
+        if (blindingInfos == null) {
+            // Regenerate if lost (should persist in real app)
+             KeysetSummary activeKeyset = mintFacade.getKeysetSummaryForUnit("sat");
+             String id = activeKeyset.id();
+             blindingInfos = new BlindedMessageService().generateBlindedMessagesForAmount(Long.valueOf(amount), id);
+        }
+
+        ExecuteMintQuoteRequest request = new ExecuteMintQuoteRequest(quoteId, ObjectConverts.convertListBlindingInfo(blindingInfos));
+        ExecuteMintQuoteResponse response = mintFacade.executeMintTokens(request);
+        
+        KeysetSummary activeKeyset = mintFacade.getKeysetSummaryForUnit("sat");
+        String id = activeKeyset.id();
+        KeysetKeys keys = mintFacade.getKeysetDetails(id);
+        
+        TokenV4 token = new BlindedMessageService().unblindMessagesToSend(keys, mintUrl, "sat", null, response.signatures, blindingInfos);
+        saveTokenV4(token);
+        pendingMintBlindingInfos.remove(quoteId);
+    }
+
+    @Override
+    public String requestMelt(String invoice, String mintUrl) throws Exception {
+        MintFacade mintFacade = new MintFacade(mintUrl);
+        RequestMeltQuoteResponse response = mintFacade.requestMeltQuote(new RequestMeltQuoteRequest("sat", invoice));
+        return response.quote();
+    }
+
+    @Override
+    public void meltTokens(String quoteId, String mintUrl) throws Exception {
+        // We need to fetch the quote amount first to know how much to melt
+        // But for this interface we assumed just quoteId. 
+        // We actually need to pay, so we need to select tokens.
+        // Let's assume we fetch the quote again or the user provides the amount? 
+        // The MintHttpClient.meltState could tell us the amount but we don't have it exposed nicely.
+        // Let's change the flow: The user usually sees the fee and amount.
+        // For now, let's look up the quote on the mint to get amount + fee
+        
+        MintFacade mintFacade = new MintFacade(mintUrl);
+        RequestMeltQuoteResponse quote = mintFacade.meltState(quoteId);
+        
+        if (quote.paid()) {
+            throw new Exception("Quote already paid");
+        }
+        
+        long totalAmount = Long.parseLong(quote.amount()) + Long.parseLong(quote.fee_reserve());
+        
+        // Select tokens
+        List<TokenEntity> inputs = new ArrayList<>();
+        long currentSum = 0;
+        Iterable<TokenEntity> allTokens = tokenRepository.findAll();
+        for (TokenEntity t : allTokens) {
+            if (t.getMint().equals(mintUrl) && "sat".equals(t.getUnit())) {
+                inputs.add(t);
+                currentSum += t.getAmount();
+                if (currentSum >= totalAmount) break;
+            }
+        }
+        
+        if (currentSum < totalAmount) {
+            throw new Exception("Insufficient funds");
+        }
+        
+        // Prepare Swap for exact amount (target + fee)
+        KeysetSummary activeKeyset = mintFacade.getKeysetSummaryForUnit("sat");
+        String id = activeKeyset.id();
+        KeysetKeys keys = mintFacade.getKeysetDetails(id);
+        BlindedMessageService blindedMessageService = new BlindedMessageService();
+
+        List<Proof> inputProofs = new ArrayList<>();
+        inputs.forEach(t -> inputProofs.add(new Proof(
+                String.valueOf(t.getAmount()), t.getC(), t.getKeysetId(), t.getSecret()
+        )));
+
+        // Outputs: Change only. The target amount is burnt by melt.
+        // Wait, melt expects inputs.
+        // If we have exact change, great. If not, we need to swap first to get exact proofs?
+        // Cashu Melt (Nut-05) accepts inputs. The mint handles the burn.
+        // But if inputs > amount + fee, the mint returns change?
+        // NUT-05: PostMeltRequest has 'inputs'.
+        // "If the inputs are greater than amount + fee, the mint SHOULD return change."
+        // We need to provide blinded messages for the change.
+        
+        long changeAmount = currentSum - totalAmount;
+        List<BlindingInfo> changeBlindingInfos = new ArrayList<>();
+        if (changeAmount > 0) {
+            changeBlindingInfos.addAll(blindedMessageService.generateBlindedMessagesForAmount(changeAmount, id));
+        }
+        
+        ExecuteMeltQuoteRequest request = new ExecuteMeltQuoteRequest(
+                quoteId, 
+                inputProofs, 
+                changeAmount > 0 ? ObjectConverts.convertListBlindingInfo(changeBlindingInfos) : null
+        );
+        
+        ExecuteMeltQuoteResponse response = mintFacade.executeMeltTokens(request);
+        
+        if (response.paid()) {
+            // Delete spent inputs
+            tokenRepository.deleteAll(inputs);
+            
+            // Handle change
+            if (response.change() != null && !response.change().isEmpty()) {
+                TokenV4 changeToken = blindedMessageService.unblindMessagesToSend(
+                        keys, mintUrl, "sat", null, response.change(), changeBlindingInfos
+                );
+                saveTokenV4(changeToken);
+            }
+        } else {
+             throw new Exception("Payment failed");
+        }
+    }
