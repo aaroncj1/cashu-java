@@ -28,4 +28,4 @@ dependencyResolutionManagement {
 }
 
 // Include the sub‑projects
-include 'cashu-core', 'cashu-java-mint', 'cashu-java-wallet'
+include 'cashu-core', 'cashu-java-mint', 'cashu-java-wallet', 'cashu-validation-spring-boot-starter'
