@@ -5,4 +5,7 @@ public record RequestMeltQuoteResponse(String quote, String amount,
                                        String fee_reserve, Integer expiry,
                                        String state, String payment_preimage,
                                        String change) {
+    public boolean paid() {
+        return "PAID".equals(state);
+    }
 }

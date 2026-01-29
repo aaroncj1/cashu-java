@@ -4,5 +4,5 @@ import io.github.aaroncj1.cashu.core.model.Proof;
 
 import java.util.List;
 
-public record ExecuteMeltQuoteRequest(String quote, List<Proof> inputs) {
+public record ExecuteMeltQuoteRequest(String quote, List<Proof> inputs, List<io.github.aaroncj1.cashu.core.model.BlindedMessage> outputs) {
 }

@@ -2,9 +2,14 @@ package io.github.aaroncj1.cashu.wallet.service;
 
 import io.github.aaroncj1.cashu.core.crypto.impl.CryptoUtils;
 import io.github.aaroncj1.cashu.core.model.*;
+import io.github.aaroncj1.cashu.core.model.api.melt.v1.bolt11.request.ExecuteMeltQuoteRequest;
+import io.github.aaroncj1.cashu.core.model.api.melt.v1.bolt11.request.RequestMeltQuoteRequest;
+import io.github.aaroncj1.cashu.core.model.api.melt.v1.bolt11.response.ExecuteMeltQuoteResponse;
+import io.github.aaroncj1.cashu.core.model.api.melt.v1.bolt11.response.RequestMeltQuoteResponse;
 import io.github.aaroncj1.cashu.core.model.api.mint.v1.bolt11.request.ExecuteMintQuoteRequest;
 import io.github.aaroncj1.cashu.core.model.api.mint.v1.bolt11.request.RequestMintQuoteRequest;
 import io.github.aaroncj1.cashu.core.model.api.mint.v1.bolt11.response.ExecuteMintQuoteResponse;
+import io.github.aaroncj1.cashu.core.model.api.mint.v1.bolt11.response.RequestMintQuoteResponse;
 import io.github.aaroncj1.cashu.core.model.api.swap.v1.SwapResponse;
 import io.github.aaroncj1.cashu.core.model.api.swap.v1.SwapTokensRequest;
 import io.github.aaroncj1.cashu.core.model.serialization.v3.TokenV3;
@@ -383,3 +388,4 @@ public class WalletServiceImpl implements WalletService {
              throw new Exception("Payment failed");
         }
     }
+}
