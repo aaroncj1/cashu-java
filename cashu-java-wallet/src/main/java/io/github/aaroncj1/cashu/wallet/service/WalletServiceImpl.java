@@ -98,13 +98,13 @@ public class WalletServiceImpl implements WalletService {
         String memo = token.memo();
 
         for (ProofV4Group group : token.tokens()) {
-            String id = CryptoUtils.bytesToHex(group.id());
+            String id = CryptoUtils.bytesToHexId(group.id());
             for (ProofV4 proof : group.proofs()) {
                 TokenEntity entity = new TokenEntity();
                 entity.setMint(mint);
                 entity.setUnit(unit);
                 entity.setMemo(memo);
-                entity.setKeysetId(proof.id()); // Use proof ID instead of group ID
+                entity.setKeysetId(id);
                 entity.setAmount(proof.amount().longValue());
                 entity.setSecret(proof.secret());
                 entity.setC(CryptoUtils.bytesToHex(proof.C()));
