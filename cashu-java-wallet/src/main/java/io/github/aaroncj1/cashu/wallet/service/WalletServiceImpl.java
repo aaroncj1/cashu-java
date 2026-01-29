@@ -104,7 +104,7 @@ public class WalletServiceImpl implements WalletService {
                 entity.setMint(mint);
                 entity.setUnit(unit);
                 entity.setMemo(memo);
-                entity.setKeysetId(id);
+                entity.setKeysetId(proof.id()); // Use proof ID instead of group ID
                 entity.setAmount(proof.amount().longValue());
                 entity.setSecret(proof.secret());
                 entity.setC(CryptoUtils.bytesToHex(proof.C()));
