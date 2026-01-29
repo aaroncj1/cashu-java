@@ -32,7 +32,10 @@
     <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
         <tabs>
             <Tab text="Send/Receive">
-                <VBox spacing="10" padding="$padding">
+                <VBox spacing="10">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
                      <HBox spacing="10" alignment="CENTER_LEFT">
                         <Label text="Amount:"/>
                         <TextField fx:id="amountField" promptText="Amount in sats"/>
@@ -45,7 +48,10 @@
                 </VBox>
             </Tab>
             <Tab text="Deposit (Mint)">
-                <VBox spacing="10" padding="$padding">
+                <VBox spacing="10">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
                     <Label text="Deposit via Lightning" style="-fx-font-weight: bold;"/>
                     <HBox spacing="10" alignment="CENTER_LEFT">
                          <Label text="Amount (sats):"/>
@@ -60,7 +66,10 @@
                 </VBox>
             </Tab>
             <Tab text="Withdraw (Melt)">
-                <VBox spacing="10" padding="$padding">
+                <VBox spacing="10">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
                     <Label text="Withdraw to Lightning" style="-fx-font-weight: bold;"/>
                     <Label text="Lightning Invoice (Bolt11):"/>
                     <TextArea fx:id="meltInvoiceArea" prefRowCount="3" wrapText="true"/>
